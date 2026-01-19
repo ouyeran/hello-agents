@@ -135,10 +135,10 @@ import re
 
 # --- 1. 配置LLM客户端 ---
 # 请根据您使用的服务，将这里替换成对应的凭证和地址
-API_KEY = "YOUR_API_KEY"
-BASE_URL = "YOUR_BASE_URL"
-MODEL_ID = "YOUR_MODEL_ID"
-os.environ['TAVILY_API_KEY'] = "YOUR_TAVILY_API_KEY"
+API_KEY = "sk-c671bc9fa82a46cba868096cf90054f7"
+BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+MODEL_ID = "qwen3-max"
+os.environ['TAVILY_API_KEY'] = "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"
 
 llm = OpenAICompatibleClient(
     model=MODEL_ID,
@@ -183,8 +183,8 @@ for i in range(5): # 设置最大循环次数
         print(f"任务完成，最终答案: {final_answer}")
         break
     
-    tool_name = re.search(r"(\w+)\(", action_str).group(1)
-    args_str = re.search(r"\((.*)\)", action_str).group(1)
+    tool_name = re.search(r"(\w+)\(", action_str).group(1)  # 提取工具名
+    args_str = re.search(r"\((.*)\)", action_str).group(1)  # 提取参数
     kwargs = dict(re.findall(r'(\w+)="([^"]*)"', args_str))
 
     if tool_name in available_tools:

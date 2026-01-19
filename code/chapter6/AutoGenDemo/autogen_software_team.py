@@ -19,10 +19,35 @@ from autogen_agentchat.ui import Console
 
 def create_openai_model_client():
     """创建 OpenAI 模型客户端用于测试"""
+    print(os.getenv("LLM_MODEL_ID", "gpt-4o"),
+        os.getenv("LLM_API_KEY"),
+        os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"))
     return OpenAIChatCompletionClient(
         model=os.getenv("LLM_MODEL_ID", "gpt-4o"),
         api_key=os.getenv("LLM_API_KEY"),
-        base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
+        base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
+        # 必须添加 model_info 参数
+        model_info={
+            # ========== v0.4.7+ 及后续版本强制要求的必需字段 ==========
+            "vision": False,                 # 是否为视觉模型 (qwen3-max不是)
+            "function_calling": True,        # 是否支持函数调用 (通常支持)
+            "json_output": True,             # 是否支持JSON格式输出 (通常支持)
+            "max_tokens": 2000,              # 单次回复最大token数
+            "context_length": 128000,        # 上下文总长度 (qwen3-max通常为128K)
+            "family": "qwen",                # 模型所属家族，非常重要！[citation:8]
+
+            # ========== 其他建议提供的功能字段 ==========
+            "streaming": True,               # 是否支持流式输出
+            "supports_system_message": True,     # 支持系统消息
+            "supports_parallel_tool_calls": True, # 支持并行工具调用
+            "supports_response_schema": True,    # 支持响应格式约束
+            
+            # ========== 可选/信息性字段 ==========
+            "model_id": os.getenv("LLM_MODEL_ID", "qwen3-max"),
+            "input_cost_per_token": 0.000002,
+            "output_cost_per_token": 0.000008,
+            "description": "通义千问 Max 版本模型",
+        }
     )
 
 def create_product_manager(model_client):
@@ -188,6 +213,10 @@ if __name__ == "__main__":
         print(f"❌ 运行错误：{e}")
         import traceback
         traceback.print_exc()
+
+    a = """
+pip install "autogen-agentchat" "autogen-core" "autogen-ext[openai]"
+"""
 
 
 
